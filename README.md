@@ -1,5 +1,5 @@
 ## Security Vulnerability: bad RNG
-** The goal of this project was to find a security vulnerability in a smart contract, work out how to exploit it and then write tests to demonstrate whether the exploit was successful.
+**The goal of this project was to find a security vulnerability in a smart contract, work out how to exploit it and then write tests to demonstrate whether the exploit was successful.**
 
 ### Motivation
 

@@ -11,12 +11,12 @@ In an effort to learn Solidity, I have been:
 In Patrick's latest [video](https://www.youtube.com/watch?v=TmZ8gH-toX0) on auditing smart contracts, he challenged the audience to pause the video and try to find the vulnerability in several smart contracts in this [repo](https://github.com/PatrickAlphaC/hardhat-security-fcc/). So that's what I did, and this is my best attempt to exploit the [BadRNG.sol](https://github.com/PatrickAlphaC/hardhat-security-fcc/blob/main/contracts/BadRNG.sol) contract and produce tests written in Foundry using what I've managed to learn to date.
 
 ### Approach & Learnings
-** How is a winner picked?
+**How is a winner picked?**
 - `randomWinnerIndex` is determined from the `block.difficulty` (globally available variable) and `msg.sender`.
 - Addresses that have entered the raffle are stored in a dynamic array `s_players`. The address of the winner is found from `randomWinnerIndex % s_players.length`.
 - Since the array is private, we can't 'easily' access the length, but we still can do it. The way forward? Accessing data from storage slots. Familiar with the work of [noxx](https://twitter.com/noxx3xxon), I dove head first into EVM Deep Dives - Part 3 [here](https://noxx.substack.com/p/evm-deep-dives-the-path-to-shadowy-3ea?s=r), which led me [here](https://programtheblockchain.com/posts/2018/03/09/understanding-ethereum-smart-contract-storage/).
 
-** What was my approach?
+**What was my approach?**
 - We can know all of the variables we need to know when to enter the raffle, and when to call `pickWinner()` to end the raffle. So our [Attack.sol](./src/Attack.sol) contract should have a function to `enter()` the Raffle and one to `withdraw()` funds from the contract to our address.
 - To create users, I created a Utilities contract that I saw utilised in the Damn Vulnerable Defi Foundry edition [here](https://github.com/nicolasgarcia214/damn-vulnerable-defi-foundry/blob/master/test/utils/Utilities.sol). This allowed me to use the `createUsers(uint256 numUsers)` function to create a desired number of users with a 100 ether starting balance in [BadRNGTest.sol](./test/BadRNG.t.sol) (my testing contract).
 - The attacker address was set as `payable(address(0x69))` for the culture, starting with a 30 ether balance (achieved using the Foundry deal cheatcode). The Attack.sol contract was then deployed and funded with 12 ether by the attacker. I have used the Openzeppelin Ownable contract to ensure that the attacker is the owner of Attack.
